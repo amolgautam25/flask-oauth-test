@@ -14,11 +14,16 @@ def ouath_redirect():
 
     token_url = "https://app.clio.com/oauth/token?client_id=" + client_id +"&client_secret=" + client_secret +"&grant_type=" + grant_type +"&code=" +  code + "&redirect_uri=" + "localhost:8081/oauth/redirect"
     response = requests.post(token_url)
-    print("Yo")
-    print(response)
+
+    token = response.json()['access_token']
+    print(token)
+
+    whoami_url = "https://app.clio.com/api/v4/users/who_am_i"
+    bearer_token = {"Authorization": "Bearer " + token}
+    whoami_response = requests.get(whoami_url, headers=bearer_token)
 
 
-    return render_template("redirect.html", code=code, oauth_url = token_url)
+    return render_template("redirect.html", code=code, oauth_url = token_url, response=whoami_response.json())
 
 @app.route('/')
 def hello_world():
